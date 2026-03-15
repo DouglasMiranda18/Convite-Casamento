@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin | Manuella & Douglas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --olive: #6b7a45; --pink: #f6d6db; --bg: #faf7f6; }
+        body { font-family: 'Montserrat', sans-serif; background: var(--bg); padding: 20px; color: #333; }
+        .admin-container { max-width: 800px; margin: 0 auto; }
+        h1 { font-family: 'Playfair Display', serif; color: var(--olive); text-align: center; }
+        
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        h2 { font-size: 1.2rem; border-bottom: 2px solid var(--pink); padding-bottom: 10px; margin-bottom: 20px; color: var(--olive); }
+        
+        /* Formulário */
+        .form-group { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; margin-bottom: 15px; }
+        input, select, textarea { padding: 12px; border: 1px solid #ddd; border-radius: 8px; outline: none; font-family: inherit; }
+        textarea { resize: vertical; min-height: 60px; }
+        button { background: var(--olive); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.3s; }
+        button:hover { opacity: 0.9; }
+        
+        /* Tabelas e Listas */
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
+        th { background: #f9f9f9; color: var(--olive); }
+        .btn-delete { background: #ff4d4d; padding: 5px 10px; font-size: 0.8rem; }
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+        .status-disponivel { background: #e1f5fe; color: #0288d1; }
+        .status-reservado { background: #ffebee; color: #c62828; }
+    </style>
+</head>
+<body>
+
+<div class="admin-container">
+    <h1>Painel de Controle</h1>
+
+    <div class="card">
+        <h2><i class="fa-solid fa-list"></i> Gerenciar Lista de Convidados</h2>
+        <div class="form-group">
+            <input type="text" id="guest-name" placeholder="Nome do Convidado (ex: João Silva)">
+            <button id="btn-add-guest" style="grid-column: 2;">Adicionar à Lista</button>
+        </div>
+        <table id="table-guests" style="margin-top: 15px;">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Data Adicionado</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="list-guests"></tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2><i class="fa-solid fa-plus-circle"></i> Cadastrar Confirmação Manualmente</h2>
+        <div class="form-group" id="manual-rsvp-form">
+            <input type="text" id="rsvp-name" placeholder="Nome do Convidado" required>
+            <input type="tel" id="rsvp-phone" placeholder="Telefone (WhatsApp)" required>
+        </div>
+        <div class="form-group">
+            <input type="number" id="rsvp-qty" placeholder="Quantidade" min="1" value="1">
+            <select id="rsvp-presence">
+                <option value="sim">Presença: Sim</option>
+                <option value="nao">Presença: Não</option>
+            </select>
+            <button id="btn-add-rsvp">Adicionar</button>
+        </div>
+        <div class="form-group">
+            <textarea id="rsvp-message" placeholder="Mensagem (opcional)" style="grid-column: 1 / -1;"></textarea>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2><i class="fa-solid fa-users"></i> Lista de Confirmações (RSVP)</h2>
+        <div id="rsvp-stats" style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; text-align: center; font-weight: 600;">
+            <div>Total: <span id="stat-total">0</span></div>
+            <div>Confirmados: <span id="stat-confirmed">0</span></div>
+            <div>Não Confirmados: <span id="stat-declined">0</span></div>
+        </div>
+        <table id="table-rsvp">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>WhatsApp</th>
+                    <th>Quantidade</th>
+                    <th>Acompanhantes</th>
+                    <th>Presença</th>
+                    <th>Mensagem</th>
+                    <th>Data</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="list-rsvp-admin"></tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyDIeImR1lRYdEBCVhcB2gdm2NIogUEh1FU",
+        authDomain: "joselia-24972.firebaseapp.com",
+        projectId: "joselia-24972",
+        storageBucket: "joselia-24972.firebasestorage.app",
+        messagingSenderId: "62542621074",
+        appId: "1:62542621074:web:16d0b1aaef8a41c2a7794b"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // --- 1. Gerenciar Lista de Convidados ---
+    document.getElementById('btn-add-guest').onclick = async () => {
+        const nome = document.getElementById('guest-name').value.trim();
+
+        if(!nome) {
+            return alert("Digite o nome do convidado");
+        }
+
+        try {
+            await db.collection("convidados").add({
+                nome,
+                createdAt: new Date()
+            });
+            
+            document.getElementById('guest-name').value = "";
+            alert("Convidado adicionado à lista!");
+        } catch (e) { 
+            console.error(e);
+            alert("Erro ao adicionar convidado");
+        }
+    };
+
+    // --- 2. Listar Convidados em Tempo Real ---
+    db.collection("convidados").orderBy("nome").onSnapshot((snap) => {
+        const tbody = document.getElementById('list-guests');
+        tbody.innerHTML = "";
+
+        snap.forEach(d => {
+            const g = d.data();
+            const data = g.createdAt?.toDate?.() 
+                ? g.createdAt.toDate().toLocaleDateString('pt-BR')
+                : '-';
+            
+            tbody.innerHTML += `
+                <tr>
+                    <td style="font-weight: 600;">${g.nome}</td>
+                    <td style="font-size: 0.85rem;">${data}</td>
+                    <td><button class="btn-delete" onclick="window.deleteGuest('${d.id}')">Remover</button></td>
+                </tr>
+            `;
+        });
+    });
+
+    // --- 3. Adicionar Confirmação Manualmente ---
+    document.getElementById('btn-add-rsvp').onclick = async () => {
+        const nome = document.getElementById('rsvp-name').value.trim();
+        const telefone = document.getElementById('rsvp-phone').value.trim();
+        const quantidade = parseInt(document.getElementById('rsvp-qty').value) || 1;
+        const presenca = document.getElementById('rsvp-presence').value;
+        const mensagem = document.getElementById('rsvp-message').value.trim();
+
+        if(!nome || !telefone) {
+            return alert("Preencha Nome e Telefone");
+        }
+
+        try {
+            await db.collection("confirmacoes").add({
+                nome,
+                telefone,
+                quantidade,
+                presenca,
+                mensagem,
+                createdAt: new Date()
+            });
+            
+            // Limpar formulário
+            document.getElementById('rsvp-name').value = "";
+            document.getElementById('rsvp-phone').value = "";
+            document.getElementById('rsvp-qty').value = "1";
+            document.getElementById('rsvp-presence').value = "sim";
+            document.getElementById('rsvp-message').value = "";
+            
+            alert("Confirmação adicionada com sucesso!");
+        } catch (e) { 
+            console.error(e);
+            alert("Erro ao salvar confirmação");
+        }
+    };
+
+    // --- 4. Listar Confirmações em Tempo Real ---
+    db.collection("confirmacoes").orderBy("createdAt", "desc").onSnapshot((snap) => {
+        const tbody = document.getElementById('list-rsvp-admin');
+        tbody.innerHTML = "";
+        
+        let totalConfirmacoes = 0;
+        let confirmados = 0;
+        let naoConfirmados = 0;
+
+        snap.forEach(d => {
+            const r = d.data();
+            totalConfirmacoes++;
+            
+            if (r.presenca === 'sim') confirmados++;
+            if (r.presenca === 'nao') naoConfirmados++;
+            
+            const data = r.createdAt?.toDate?.() 
+                ? r.createdAt.toDate().toLocaleDateString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })
+                : '-';
+            
+            const presencaBadge = r.presenca === 'sim' 
+                ? '<span style="background: #e1f5fe; color: #0288d1; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.75rem;">SIM</span>'
+                : '<span style="background: #ffebee; color: #c62828; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.75rem;">NÃO</span>';
+            
+            const acompanhantesText = (r.acompanhantes && r.acompanhantes.length > 0) 
+                ? r.acompanhantes.join(', ') 
+                : '-';
+            
+            tbody.innerHTML += `
+                <tr>
+                    <td style="font-weight: 600;">${r.nome}</td>
+                    <td><a href="https://wa.me/55${r.telefone.replace(/\D/g, '')}" target="_blank">${r.telefone}</a></td>
+                    <td style="text-align: center;">${r.quantidade}</td>
+                    <td style="font-size: 0.85rem;">${acompanhantesText}</td>
+                    <td>${presencaBadge}</td>
+                    <td style="font-size: 0.85rem; color: #666;">${r.mensagem || '-'}</td>
+                    <td style="font-size: 0.85rem;">${data}</td>
+                    <td><button class="btn-delete" onclick="window.deleteRsvp('${d.id}')">Deletar</button></td>
+                </tr>
+            `;
+        });
+        
+        // Atualizar estatísticas
+        document.getElementById('stat-total').textContent = totalConfirmacoes;
+        document.getElementById('stat-confirmed').textContent = confirmados;
+        document.getElementById('stat-declined').textContent = naoConfirmados;
+    });
+
+    // --- 5. Funções Globais para Deletar ---
+    window.deleteGuest = async (id) => {
+        if(confirm("Remover este convidado da lista?")) {
+            try {
+                await db.collection("convidados").doc(id).delete();
+                alert("Convidado removido!");
+            } catch (e) {
+                console.error(e);
+                alert("Erro ao remover");
+            }
+        }
+    };
+
+    window.deleteRsvp = async (id) => {
+        if(confirm("Tem certeza que deseja deletar esta confirmação?")) {
+            try {
+                await db.collection("confirmacoes").doc(id).delete();
+                alert("Confirmação deletada!");
+            } catch (e) {
+                console.error(e);
+                alert("Erro ao deletar");
+            }
+        }
+    };
+</script>
+
+</body>
+</html>

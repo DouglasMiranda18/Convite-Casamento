@@ -1,0 +1,754 @@
+/* --- Variáveis de Design --- */
+:root {
+    --olive-green: #6b7a45;
+    --soft-olive: #8a9a5b;
+    --light-pink: #f6d6db;
+    --soft-rose: #e9b8c1;
+    --neutral-bg: #faf7f6;
+    --text-color: #3a3a3a;
+    
+    --font-title: 'Playfair Display', serif;
+    --font-names: 'C', serif;
+    --font-body: 'Montserrat', sans-serif;
+}
+
+/* --- Reset e Configurações Globais --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: #e5e5e5; 
+    color: var(--text-color);
+    font-family: var(--font-body);
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+/* --- Layout Mobile First Centered --- */
+.mobile-container {
+    width: 100%;
+    max-width: 480px;
+    background-color: var(--neutral-bg);
+    min-height: 100vh;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow-x: hidden;
+}
+
+.mobile-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+        radial-gradient(circle at 20% 18%, rgba(233, 184, 193, 0.12) 0, rgba(233, 184, 193, 0) 36%),
+        radial-gradient(circle at 80% 38%, rgba(138, 154, 91, 0.12) 0, rgba(138, 154, 91, 0) 34%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.02) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0.02) 75%, transparent 75%, transparent);
+    background-size: auto, auto, 14px 14px;
+    opacity: 0.45;
+    z-index: 0;
+}
+
+/* --- Tipografia Global --- */
+h1, h2, h3 {
+    font-weight: normal;
+}
+
+.section-title {
+    font-family: var(--font-title);
+    font-size: 1.8rem;
+    color: var(--olive-green);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+    padding: 0 20px;
+}
+
+/* --- Hero Section --- */
+.hero {
+    position: relative;
+    height: 80vh;
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("BASE.png");
+    background-size: cover;
+    background-position: center;
+    filter: blur(1px);
+    transform: scale(1.02);
+    z-index: 0;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+        linear-gradient(150deg, rgba(107, 122, 69, 0.62) 0%, rgba(107, 122, 69, 0.26) 38%, rgba(233, 184, 193, 0.26) 70%, rgba(233, 184, 193, 0.58) 100%),
+        radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0) 42%);
+    z-index: 1;
+    animation: heroWash 2.4s ease-out both;
+}
+
+.hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.06) 24%, rgba(255, 255, 255, 0) 58%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    color: var(--neutral-bg);
+    text-shadow: 1px 1px 14px rgba(0,0,0,0.5);
+    padding: 22px 18px;
+    background: transparent;
+    border-radius: 0;
+    max-width: 420px;
+    animation: heroContentReveal 1.2s ease-out 0.2s both;
+}
+
+.hero-divider {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 92px;
+    background: linear-gradient(
+        to bottom,
+        rgba(250, 247, 246, 0) 0%,
+        rgba(250, 247, 246, 0.62) 52%,
+        var(--neutral-bg) 100%
+    );
+    z-index: 2;
+    pointer-events: none;
+}
+
+.hero-divider::before {
+    content: none;
+}
+
+.initials {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 4rem;
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+    animation: monogramRise 1.6s ease-out 0.25s both;
+}
+
+.couple-names {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.2rem;
+    letter-spacing: 0.5px;
+    margin-top: 0;
+    line-height: 1.05;
+}
+
+
+/* --- Texto de Convite --- */
+.invitation-text {
+    position: relative;
+    z-index: 1;
+    padding: 2.4rem 2rem 1.4rem;
+    text-align: center;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-color);
+}
+
+.separator {
+    width: 50px;
+    height: 1px;
+    background-color: var(--soft-olive);
+    margin: 2rem auto 0;
+}
+
+.separator-small {
+    width: 30px;
+    height: 1px;
+    background-color: var(--soft-rose);
+    margin: 1rem auto;
+}
+
+/* --- Contador --- */
+.countdown-section {
+    position: relative;
+    z-index: 1;
+    padding: 1.2rem 0 2.4rem;
+}
+
+.countdown-container {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding: 0 15px;
+}
+
+.time-box {
+    background: #fff;
+    padding: 15px 10px;
+    border-radius: 12px;
+    min-width: 70px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(107, 122, 69, 0.08);
+    border: 1px solid var(--light-pink);
+}
+
+.time-box span {
+    display: block;
+    font-size: 1.8rem;
+    font-family: var(--font-title);
+    color: var(--olive-green);
+    font-weight: 600;
+}
+
+.time-box small {
+    text-transform: uppercase;
+    font-size: 0.55rem;
+    letter-spacing: 1px;
+    color: var(--soft-olive);
+    display: block;
+    margin-top: 5px;
+}
+
+/* --- Detalhes do Casamento --- */
+.wedding-details, .location, .guest-guide, .rsvp, .gifts-section {
+    position: relative;
+    z-index: 1;
+    padding: 2.4rem 1.5rem;
+}
+
+.details-card, .location-card {
+    background: #fff;
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(107, 122, 69, 0.05);
+    border: 1px solid var(--light-pink);
+}
+
+.date {
+    font-family: var(--font-title);
+    font-size: 1.2rem;
+    color: var(--olive-green);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.time {
+    font-weight: 600;
+    margin-top: 5px;
+    color: var(--soft-olive);
+}
+
+.location-name {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.location-address {
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.6;
+}
+
+/* styling for forbidden label */
+.forbidden {
+    color: red;
+    font-weight: 700;
+}
+
+/* --- Menu de Ícones --- */
+.icon-menu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    padding: 1.5rem 1rem;
+    background-color: #fff;
+    border-top: 1px solid var(--light-pink);
+    border-bottom: 1px solid var(--light-pink);
+}
+
+.menu-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--soft-olive);
+    font-size: 0.75rem;
+    text-align: center;
+    width: 80px;
+    transition: all 0.3s ease;
+}
+
+.menu-item i {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+    color: var(--soft-rose);
+    transition: transform 0.3s ease;
+}
+
+.menu-item:hover i {
+    transform: scale(1.1);
+    color: var(--olive-green);
+}
+
+.menu-item:hover {
+    color: var(--olive-green);
+}
+
+/* --- NOVO: Manual do Convidado --- */
+.guide-intro {
+    text-align: center;
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+}
+
+.guide-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.guide-item {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    border: 1px solid var(--light-pink);
+    box-shadow: 0 5px 15px rgba(107, 122, 69, 0.05);
+}
+
+.guide-icon {
+    width: 50px;
+    height: 50px;
+    background-color: var(--neutral-bg);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px;
+    color: var(--olive-green);
+    font-size: 1.2rem;
+}
+
+.guide-item h4 {
+    color: var(--olive-green);
+    font-family: var(--font-title);
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+}
+
+.guide-item p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--text-color);
+}
+
+/* Cores Proibidas */
+.prohibited-colors {
+    margin-top: 15px;
+    background: var(--neutral-bg);
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+}
+
+.color-dots {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 10px 0;
+}
+
+.dot {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+.dot::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 30px;
+    height: 2px;
+    background-color: #ff4d4d;
+    transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.dot.pink { background-color: #ffc0cb; }
+.dot.green { background-color: #4CAF50; }
+.dot.white { background-color: #ffffff; }
+
+/* --- Lista de Presentes --- */
+.section-subtitle {
+    text-align: center;
+    font-size: 0.9rem;
+    padding: 0 10px 20px;
+    color: #666;
+    line-height: 1.5;
+}
+
+.btn-gifts {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background-color: var(--olive-green);
+    color: #fff;
+    padding: 18px 32px;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 20px auto 0;
+    display: block;
+    width: fit-content;
+    box-shadow: 0 5px 15px rgba(107, 122, 69, 0.2);
+    letter-spacing: 0.5px;
+}
+
+.btn-gifts:hover {
+    background-color: var(--soft-olive);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(107, 122, 69, 0.3);
+}
+
+.btn-gifts i {
+    font-size: 1.2rem;
+}
+
+/* --- Formulário RSVP --- */
+.rsvp-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background: #fff;
+    padding: 2rem;
+    border-radius: 15px;
+    border: 1px solid var(--light-pink);
+    box-shadow: 0 10px 25px rgba(107, 122, 69, 0.05);
+}
+
+#nomes-container {
+    padding: 15px;
+    background-color: var(--neutral-bg);
+    border-radius: 8px;
+    border: 1px solid var(--soft-rose);
+}
+
+#nomes-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.nome-input {
+    padding: 12px;
+    border: 1px solid var(--soft-rose);
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    outline: none;
+    background: #fff;
+    transition: border-color 0.3s ease;
+}
+
+.nome-input:focus {
+    border-color: var(--olive-green);
+}
+
+.rsvp-form input {
+    font-family: var(--font-body);
+    padding: 15px;
+    border: 1px solid var(--soft-rose);
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    background: var(--neutral-bg);
+    transition: border-color 0.3s ease;
+}
+
+.rsvp-form input:focus,
+.rsvp-form textarea:focus,
+.rsvp-form select:focus {
+    border-color: var(--olive-green);
+}
+
+.rsvp-form textarea,
+.rsvp-form select {
+    font-family: var(--font-body);
+    padding: 15px;
+    border: 1px solid var(--soft-rose);
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    background: var(--neutral-bg);
+    transition: border-color 0.3s ease;
+    width: 100%;
+}
+
+.rsvp-form textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.btn-primary {
+    background-color: var(--olive-green);
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.btn-primary:hover {
+    background-color: var(--soft-olive);
+}
+
+/* --- Localização --- */
+.location-icon {
+    font-size: 2.5rem;
+    color: var(--olive-green);
+    margin-bottom: 1rem;
+}
+
+.btn-outline {
+    display: inline-block;
+    margin-top: 1.5rem;
+    padding: 12px 20px;
+    border: 1px solid var(--olive-green);
+    color: var(--olive-green);
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-outline:hover {
+    background-color: var(--olive-green);
+    color: #fff;
+}
+
+/* --- Footer --- */
+.footer {
+    background-color: var(--olive-green);
+    color: var(--neutral-bg);
+    text-align: center;
+    padding: 3rem 2rem;
+    margin-top: 2rem;
+}
+
+.footer-text {
+    font-style: italic;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.separator-footer {
+    width: 40px;
+    height: 1px;
+    background-color: var(--soft-olive);
+    margin: 1rem auto;
+}
+
+.couple-names-footer {
+    font-family: var(--font-names);
+    font-size: 2.5rem;
+    margin-top: 1rem;
+}
+
+/* --- Botão WhatsApp --- */
+.whatsapp-fab {
+    position: fixed;
+    bottom: 20px;
+    right: max(20px, calc(50vw - 220px));
+    background-color: #25D366;
+    color: white;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    text-decoration: none;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+}
+
+.whatsapp-fab:hover {
+    transform: scale(1.1);
+}
+
+/* --- Animações --- */
+.fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@keyframes heroWash {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes heroContentReveal {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes monogramRise {
+    0% {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+        letter-spacing: 9px;
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        letter-spacing: 3px;
+    }
+}
+
+/* Garante que o contador não quebre em telas pequenas */
+.countdown-container {
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* Feedback visual para botões desabilitados */
+button:disabled {
+    cursor: not-allowed;
+    filter: grayscale(1);
+}
+
+/* --- Estilos para Desktop --- */
+@media (min-width: 768px) {
+    body {
+        background-color: #f0f0f0;
+    }
+
+    .mobile-container {
+        max-width: 700px;
+        width: 100%;
+        margin: 0 auto;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        border-radius: 20px;
+        overflow: hidden;
+    }
+
+    .hero {
+        height: 70vh;
+        background-attachment: fixed;
+    }
+
+    .initials {
+        font-size: 4.5rem;
+    }
+
+    .couple-names {
+        font-size: 3.5rem;
+    }
+
+    .section-title {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .invitation-text {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        padding: 1.2rem 2.2rem 1.6rem;
+    }
+
+    .countdown-container {
+        gap: 25px;
+        justify-content: center;
+    }
+
+    .time-box {
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .time-box span {
+        font-size: 2rem;
+    }
+
+    .time-box small {
+        font-size: 0.8rem;
+    }
+
+    .details-card, .location-card, .rsvp-form {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 2.5rem;
+        border-radius: 20px;
+    }
+
+    .wedding-details, .location, .guest-guide, .rsvp, .gifts-section {
+        padding: 3.2rem 2.2rem;
+    }
+
+    .btn-gifts, .btn-outline, .btn-primary {
+        font-size: 1rem;
+        padding: 18px 35px;
+    }
+}
