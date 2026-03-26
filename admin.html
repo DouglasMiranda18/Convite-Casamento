@@ -77,9 +77,9 @@
     <div class="card">
         <h2><i class="fa-solid fa-users"></i> Lista de Confirmações (RSVP)</h2>
         <div id="rsvp-stats" style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; text-align: center; font-weight: 600;">
-            <div>Total: <span id="stat-total">0</span></div>
-            <div>Confirmados: <span id="stat-confirmed">0</span></div>
-            <div>Não Confirmados: <span id="stat-declined">0</span></div>
+            <div>Total de Pessoas: <span id="stat-total">0</span></div>
+            <div>Pessoas Confirmadas: <span id="stat-confirmed">0</span></div>
+            <div>Não Confirmadas: <span id="stat-declined">0</span></div>
         </div>
         <table id="table-rsvp">
             <thead>
@@ -199,16 +199,19 @@
         const tbody = document.getElementById('list-rsvp-admin');
         tbody.innerHTML = "";
         
-        let totalConfirmacoes = 0;
+        let totalPessoas = 0;
         let confirmados = 0;
         let naoConfirmados = 0;
 
         snap.forEach(d => {
             const r = d.data();
-            totalConfirmacoes++;
+            const quantidadePessoas = Number.isFinite(Number(r.quantidade))
+                ? Math.max(1, Number(r.quantidade))
+                : Math.max(1, (Array.isArray(r.acompanhantes) ? r.acompanhantes.length : 0) + 1);
+            totalPessoas += quantidadePessoas;
             
-            if (r.presenca === 'sim') confirmados++;
-            if (r.presenca === 'nao') naoConfirmados++;
+            if (r.presenca === 'sim') confirmados += quantidadePessoas;
+            if (r.presenca === 'nao') naoConfirmados += quantidadePessoas;
             
             const data = r.createdAt?.toDate?.() 
                 ? r.createdAt.toDate().toLocaleDateString('pt-BR', {
@@ -232,7 +235,7 @@
                 <tr>
                     <td style="font-weight: 600;">${r.nome}</td>
                     <td><a href="https://wa.me/55${r.telefone.replace(/\D/g, '')}" target="_blank">${r.telefone}</a></td>
-                    <td style="text-align: center;">${r.quantidade}</td>
+                    <td style="text-align: center;">${quantidadePessoas}</td>
                     <td style="font-size: 0.85rem;">${acompanhantesText}</td>
                     <td>${presencaBadge}</td>
                     <td style="font-size: 0.85rem; color: #666;">${r.mensagem || '-'}</td>
@@ -243,7 +246,7 @@
         });
         
         // Atualizar estatísticas
-        document.getElementById('stat-total').textContent = totalConfirmacoes;
+        document.getElementById('stat-total').textContent = totalPessoas;
         document.getElementById('stat-confirmed').textContent = confirmados;
         document.getElementById('stat-declined').textContent = naoConfirmados;
     });
